@@ -12,9 +12,12 @@ sample sqoop command:
 sqoop-import --connect jdbc:mysql://10.0.2.2/machine_learning --username <MYSQL USERNAME> --password <MYSQL PASSWORD> --table uni_lin_reg_data --target-dir /import/uni_lin_reg_data --columns "population, profit"
 
 set up Spark:
-wget http://d3kbcqa49mib13.cloudfront.net/spark-1.4.0-bin-hadoop1.tgz
+wget http://mirrors.advancedhosters.com/apache/spark/spark-1.4.0/spark-1.4.0.tgz
 
-tar zxvf spark-1.4.0-bin-hadoop1.tgz
+tar zxvf spark-1.4.0.tgz
+
+cd spark-1.4.0
+mvn -Dhadoop.version=1.2.1 -Phadoop-1 -DskipTests clean package
 
 export SPARK_HOME=<SPARK DIRECTORY>
 
