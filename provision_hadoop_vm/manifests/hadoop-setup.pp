@@ -23,6 +23,12 @@ exec { "unpack_hadoop" :
   require => Exec["download_hadoop"] 
 }
 
+$python_packages = [ "python-numpy", "python-scipy", "python-matplotlib", "ipython", "ipython-notebook", "python-pandas", "python-sympy", "python-nose" ]
+package { $python_packages:
+	ensure => installed,
+	require => Exec['apt-get update'],
+}
+
 package { "emacs23":
 	ensure => installed,
 	require => Exec['apt-get update'],
