@@ -34,10 +34,11 @@ wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.36.
 tar zxvf mysql-connector-java-5.1.36.tar.gz
 sudo mv mysql-connector-java-5.1.36/mysql-connector-java-5.1.36-bin.jar /usr/lib/sqoop/
 #clean up
-rm -r mysql-connector-java-5.1.36
-sudo rm *.tar.gz
-sudo chown vagrant:vagrant *
 sudo mv /usr/lib/jvm/java-6-openjdk-amd64/ /usr/lib/jvm/java-6-openjdk
+cd /home/vagrant
+rm -r mysql-connector-java-5.1.36
+sudo rm *.gz
+sudo chown vagrant:vagrant *
 #edit .bashrc
 echo 'source /etc/environment' >> /home/vagrant/.bashrc
 echo 'export SQOOP_HOME=/usr/lib/sqoop' >> /home/vagrant/.bashrc

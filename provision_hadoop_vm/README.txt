@@ -11,15 +11,11 @@ bash $HADOOP_HOME/bin/start-all.sh
 sample sqoop command:
 sqoop-import --connect jdbc:mysql://10.0.2.2/machine_learning --username <MYSQL USERNAME> --password <MYSQL PASSWORD> --table uni_lin_reg_data --target-dir /import/uni_lin_reg_data --columns "population, profit"
 
-set up Spark:
+do spark:
 wget http://mirrors.advancedhosters.com/apache/spark/spark-1.4.0/spark-1.4.0.tgz
-
 tar zxvf spark-1.4.0.tgz
-
 cd spark-1.4.0
-mvn -Dhadoop.version=1.2.1 -Phadoop-1 -DskipTests clean package
-
-export SPARK_HOME=<SPARK DIRECTORY>
-
-export PATH=$SPARK_HOME/bin:$PATH
+MAVEN_OPTS="-Xmx2g -XX:MaxPermSize=512M -XX:ReservedCodeCacheSize=512m" mvn -Dhadoop.version=1.2.1 -Phadoop-1 -DskipTests clean package
+echo 'export SPARK_HOME=/home/vagrant/spark-1.4.0' >> /home/vagrant/.bashrc
+echo 'export PATH=$SPARK_HOME/bin:$PATH' >> /home/vagrant/.bashrc
 
