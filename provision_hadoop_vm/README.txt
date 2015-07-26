@@ -19,3 +19,12 @@ MAVEN_OPTS="-Xmx2g -XX:MaxPermSize=512M -XX:ReservedCodeCacheSize=512m" mvn -Dha
 echo 'export SPARK_HOME=/home/vagrant/spark-1.4.0' >> /home/vagrant/.bashrc
 echo 'export PATH=$SPARK_HOME/bin:$PATH' >> /home/vagrant/.bashrc
 
+must create a file in top level directory of this repository called my_sql_conn.py declaring the mySQLconn variable.  Should look like the following:
+
+import MySQLdb
+
+mySQLconn = MySQLdb.connect(host=<db hostname, sometimes "localhost">,
+                        	user=<db username>,
+                        	passwd=<db password>,
+                        	db=<db name>
+                        	)

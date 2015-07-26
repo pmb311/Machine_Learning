@@ -1,4 +1,5 @@
 from __future__ import division
+from my_sql_conn import mySQLconn
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -27,8 +28,12 @@ def computeCost(input_file, x, y, theta):
     J = 1 / (2 * m) * sum(sqrErrors)
     print J
 
-def gradientDescent(input_file, x, y, alpha, num_iters):
-    df = pd.read_csv(input_file, names=[x, y])
+def gradientDescent(input_file, x, y, alpha, num_iters, source, sql_query=None):
+    if source == 'csv':
+        df = pd.read_csv(input_file, names=[x, y])
+    if source == 'mySQL':
+        conn = mySQLconn
+        df = pd.read_sql(sql_query, conn)
     m = len(df[y])
     df.insert(0,'Ones', pd.Series(np.ones(m)))
     J_history = pd.Series(np.zeros(len(df)))
@@ -44,5 +49,5 @@ plotData('uni_lin_reg_data.csv', 'Population', 'Profit')
 
 computeCost('uni_lin_reg_data.csv', 'Population', 'Profit', pd.Series(np.zeros(2)))
 
-gradientDescent('uni_lin_reg_data.csv', 'Population', 'Profit', 0.01, 1500)
+gradientDescent('uni_lin_reg_data.csv', 'Population', 'Profit', 0.01, 1500, 'mySQL', 'select Population, Profit from uni_lin_reg_data')
 
