@@ -1,8 +1,13 @@
 from __future__ import division
 from my_sql_conn import mySQLconn
+from pyspark import SparkContext
+from pyspark.sql import *
+import pyspark.sql.functions as psf
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+
+sc = SparkContext('local', 'pyspark')
 
 def warmUpExercise():
     print np.identity(5)
@@ -28,6 +33,18 @@ def computeCost(input_file, x, y, theta):
     J = 1 / (2 * m) * sum(sqrErrors)
     print J
 
+def sparkComputeCost(input_file, x, y, theta):
+    df = pd.read_csv(input_file, names=[x, y])
+    m = len(df[y])
+    df.insert(0,'Ones', pd.Series(np.ones(m)))
+    df.insert(0,'h', pd.Series(np.dot(df.ix[:,'Ones':x], theta)))
+    sqlCtx = SQLContext(sc)
+    spark_df = sqlCtx.createDataFrame(df)
+    spark_df = spark_df.withColumn('sqrErrors', psf.pow(spark_df.h - spark_df.Profit, 2)) #FIXME hardcoded to test example
+    J = spark_df.select(1 / (2 * m) * psf.sum(spark_df.sqrErrors))
+    J.show()
+    
+
 def gradientDescent(input_file, x, y, alpha, num_iters, source, sql_query=None):
     if source == 'csv':
         df = pd.read_csv(input_file, names=[x, y])
@@ -43,11 +60,12 @@ def gradientDescent(input_file, x, y, alpha, num_iters, source, sql_query=None):
         theta = theta - (alpha / m) * np.dot(X, pd.Series(np.dot(df.ix[:,'Ones':x], theta)) - df.ix[:, y])
     print theta
 
-warmUpExercise()
+# warmUpExercise()
 
-plotData('uni_lin_reg_data.csv', 'Population', 'Profit')
+# plotData('uni_lin_reg_data.csv', 'Population', 'Profit')
 
 computeCost('uni_lin_reg_data.csv', 'Population', 'Profit', pd.Series(np.zeros(2)))
 
-gradientDescent('uni_lin_reg_data.csv', 'Population', 'Profit', 0.01, 1500, 'mySQL', 'select Population, Profit from uni_lin_reg_data')
+# gradientDescent('uni_lin_reg_data.csv', 'Population', 'Profit', 0.01, 1500, 'mySQL', 'select Population, Profit from uni_lin_reg_data')
 
+sparkComputeCost('uni_lin_reg_data.csv', 'Population', 'Profit', pd.Series(np.zeros(2)))

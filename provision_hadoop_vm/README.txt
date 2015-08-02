@@ -9,7 +9,7 @@ hadoop namenode -format
 bash $HADOOP_HOME/bin/start-all.sh
 
 sample sqoop command:
-sqoop-import --connect jdbc:mysql://10.0.2.2/machine_learning --username <MYSQL USERNAME> --password <MYSQL PASSWORD> --table uni_lin_reg_data --target-dir /import/uni_lin_reg_data --columns "population, profit"
+sqoop-import --connect jdbc:mysql://10.0.2.2/machine_learning --username <MYSQL USERNAME> --password <MYSQL PASSWORD> --table uni_lin_reg_data --target-dir /import/uni_lin_reg_data --columns "Population, Profit"
 
 do spark:
 wget http://mirrors.advancedhosters.com/apache/spark/spark-1.4.0/spark-1.4.0.tgz
