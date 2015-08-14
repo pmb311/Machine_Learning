@@ -7,12 +7,12 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-sc = SparkContext('local', 'pyspark')
+# sc = SparkContext('local', 'pyspark')
 
 def warmUpExercise():
     print np.identity(5)
 
-def plotData(input_file, x, y, presentation=False):
+def plotDataFromCsv(input_file, x, y, presentation=False):
     df = pd.read_csv(input_file, names=[x, y])
     if presentation:
         fig = plt.figure()
@@ -24,7 +24,7 @@ def plotData(input_file, x, y, presentation=False):
         fig.suptitle('Profit By Population')
         fig.savefig('test.jpg')
 
-def computeCost(input_file, x, y, theta):
+def computeCost(x, y, theta, input_file):
     df = pd.read_csv(input_file, names=[x, y])
     m = len(df[y])
     df.insert(0,'Ones', pd.Series(np.ones(m)))
@@ -58,14 +58,27 @@ def gradientDescent(input_file, x, y, alpha, num_iters, source, sql_query=None):
     theta = pd.Series(np.zeros(len(df.columns) - 1))
     for i in range(num_iters):
         theta = theta - (alpha / m) * np.dot(X, pd.Series(np.dot(df.ix[:,'Ones':x], theta)) - df.ix[:, y])
+        J_history[i] = computeCost(x, y, theta, input_file)
     print theta
+    # print J_history
+    # graph it
+    plt.scatter(df[x], df[y])
+    plt.plot(df[x], theta[1] * df[x] + theta[0], '-')
+    plt.xlabel('Population')
+    plt.ylabel('Profit')
+    plt.show()
+    predict1 = 10000 * sum(pd.Series([1, 3.5]) * theta)
+    predict2 = 10000 * sum(pd.Series([1, 7]) * theta)
+    print 'For population = 35,000, we predict a profit of ' + str(predict1)
+    print 'For population = 70,000, we predict a profit of ' + str(predict2)
 
-# warmUpExercise()
 
-# plotData('uni_lin_reg_data.csv', 'Population', 'Profit')
+warmUpExercise()
 
-computeCost('uni_lin_reg_data.csv', 'Population', 'Profit', pd.Series(np.zeros(2)))
+plotDataFromCsv('uni_lin_reg_data.csv', 'Population', 'Profit')
 
-# gradientDescent('uni_lin_reg_data.csv', 'Population', 'Profit', 0.01, 1500, 'mySQL', 'select Population, Profit from uni_lin_reg_data')
+computeCost('Population', 'Profit', pd.Series(np.zeros(2)), 'uni_lin_reg_data.csv') 
 
-sparkComputeCost('uni_lin_reg_data.csv', 'Population', 'Profit', pd.Series(np.zeros(2)))
+gradientDescent('uni_lin_reg_data.csv', 'Population', 'Profit', 0.01, 1500, 'mySQL', 'select Population, Profit from uni_lin_reg_data')
+
+# sparkComputeCost('uni_lin_reg_data.csv', 'Population', 'Profit', pd.Series(np.zeros(2)))
