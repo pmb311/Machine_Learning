@@ -71,9 +71,8 @@ class LogReg():
 		print 'Optimal theta:\n' + str(optimal_theta.x)
 		return optimal_theta.x
 
-df1 = LogReg('csv', col_labels = ['test_score_1', 'test_score_2', 'Admitted'], input_file='log_reg_data1.csv')
+df1 = LogReg('mySQL', sql_query='select test1_score, test2_score, admission_status from log_reg_data1')
 # df1.plotData()
 df1.costFunction(pd.Series(np.zeros(3)))
 df1.getOptimalTheta()
-
 print 'For a student with scores 45 and 85, probability of admission = ' + str(1 / (1 + np.exp(dot(pd.Series([1, 45, 85]), df1.getOptimalTheta()))))
