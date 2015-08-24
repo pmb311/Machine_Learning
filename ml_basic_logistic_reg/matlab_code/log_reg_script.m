@@ -2,6 +2,7 @@
 %     sigmoid.m
 %     costFunction.m
 %     predict.m
+%	  plotData.m
 
 %% Initialization
 clear ; close all; clc
