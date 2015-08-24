@@ -67,12 +67,21 @@ class LogReg():
 		return J
 		
 	def getOptimalTheta(self):
+		# use the scipy optimize method minimize to obtain optimal theta
 		optimal_theta = minimize(self.costFunction, x0=pd.Series(np.zeros(3)), method='TNC', jac=False)
 		print 'Optimal theta:\n' + str(optimal_theta.x)
 		return optimal_theta.x
 
+	def predict(self, theta):
+		X = self.X
+		y = self.y
+		p = 100 * np.mean((np.round(pd.Series(1 / (1 + np.exp(dot(X, theta))))) == y).convert_objects(convert_numeric=True))
+		print 'Training accuracy = ' + str(p)
+		return p
+
 df1 = LogReg('mySQL', sql_query='select test1_score, test2_score, admission_status from log_reg_data1')
 # df1.plotData()
 df1.costFunction(pd.Series(np.zeros(3)))
-df1.getOptimalTheta()
-print 'For a student with scores 45 and 85, probability of admission = ' + str(1 / (1 + np.exp(dot(pd.Series([1, 45, 85]), df1.getOptimalTheta()))))
+theta = df1.getOptimalTheta()
+df1.predict(theta)
+print 'For a student with scores 45 and 85, probability of admission = ' + str(1 / (1 + np.exp(dot(pd.Series([1, 45, 85]), theta))))
