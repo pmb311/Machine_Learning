@@ -14,7 +14,7 @@ control(1) = 0;
 cost = sum(((-y .* log(h)) - ((1 - y) .* log(1 - h))))/m;
 reg = (lambda/(2 * m)) * sum((theta .* control) .^ 2);
 
-J = cost + reg
+J = cost + reg;
 
 reg_g = (lambda / m) * (theta .* control);
 for l = 1:columns(X);
