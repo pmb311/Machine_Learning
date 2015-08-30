@@ -43,6 +43,20 @@ class RegularizedLogReg():
 		self.m, self.n = self.X.shape
 		self.X.insert(0,'Ones', pd.Series(np.ones(self.m)))
 
+	def mapFeature(self, degree):
+		'''Adds polynomial features to the training set.  Currently only supports 2-feature input.'''
+		X1 = self.X.ix[:, 1]
+		X2 = self.X.ix[:, 2]
+		length = len(X1.index)
+		# Start with dataframe of just a 1's column.  We will append calculated features to it.
+		out = pd.DataFrame(np.ones(length), columns=['calc_feature_1'])
+		count = 2
+		for i in range(1, degree + 1):
+			for j in range(0, i + 1):
+				out.insert(len(out.axes[1]), 'calc_feature_' + str(count), (X1 ** (i - j)) * (X2 ** j))
+				count += 1
+		return out
+
 	def plotData(self, theta):
 		'''Hard-coded for sample data'''
 		df = self.df
@@ -56,4 +70,6 @@ class RegularizedLogReg():
 		pl.show()
 
 df1 = RegularizedLogReg('csv', col_labels=['Microchip Test 1', 'Microchip Test 2', 'y'], input_file='log_reg_data2.csv')
-df1.plotData(0)	
+df1.plotData(0)
+polynomial_X = df1.mapFeature(6)
+	
