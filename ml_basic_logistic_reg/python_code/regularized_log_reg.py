@@ -57,6 +57,28 @@ class RegularizedLogReg():
 				count += 1
 		return out
 
+	def costFunctionReg(self, theta, lambda_val, X, y=None):
+		'''Regularized cost function.  Meant to be used after running mapFeature on a training set.'''
+		m, n = X.shape
+		y = self.y
+		# Create hypothesis with sigmoid function
+		h = 1 / (1 + np.exp(dot(X, theta)))
+		# calculate non-regularized cost
+		cost = sum(((-y * np.log(h)) - ((1 - y) * np.log(1 - h)))) / m
+		# Set up control row for regularization.  All ones except the first element.
+		control = pd.Series(np.ones(len(theta))).set_value(0, 0)
+		# Calculate regularization parameter for cost function
+		reg = (lambda_val / (2 * m)) * sum((theta * control) ** 2)
+		J = cost + reg 
+		# Calculate regularization parameter for gradient
+		reg_g = (lambda_val / m) * (theta * control)
+		# Run regularized gradient descent
+		for i in range(n):
+			grad = ((1 / m) * X.T.dot(h - y)) + reg_g.values
+		print 'Cost = ' + str(J)
+		print 'Gradient:\n' + str(list(grad))
+		return J
+
 	def plotData(self, theta):
 		'''Hard-coded for sample data'''
 		df = self.df
@@ -72,4 +94,4 @@ class RegularizedLogReg():
 df1 = RegularizedLogReg('csv', col_labels=['Microchip Test 1', 'Microchip Test 2', 'y'], input_file='log_reg_data2.csv')
 df1.plotData(0)
 polynomial_X = df1.mapFeature(6)
-	
+df1.costFunctionReg(pd.Series(np.zeros(len(polynomial_X.columns))), 1, polynomial_X)
