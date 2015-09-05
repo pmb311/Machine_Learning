@@ -10,7 +10,7 @@ class RegularizedLogReg():
 
 	df = pd.DataFrame
 
-	def __init__(self, source, col_labels=None, sql_query=None, input_file=None):
+	def __init__(self, source, col_labels=None, sql_query=None, input_file=None, map_feature=False, degree=None):
 		# initialize variables
 		self.source = source
 		self.col_labels = col_labels
@@ -43,6 +43,10 @@ class RegularizedLogReg():
 		self.m, self.n = self.X.shape
 		self.X.insert(0,'Ones', pd.Series(np.ones(self.m)))
 
+		# Do mapFeature if specified
+		if map_feature:
+			self.X = self.mapFeature(degree)
+
 	def mapFeature(self, degree):
 		'''Adds polynomial features to the training set.  Currently only supports 2-feature input.'''
 		X1 = self.X.ix[:, 1]
@@ -55,10 +59,13 @@ class RegularizedLogReg():
 			for j in range(0, i + 1):
 				out.insert(len(out.axes[1]), 'calc_feature_' + str(count), (X1 ** (i - j)) * (X2 ** j))
 				count += 1
+		print 'New dataframe:\n' + str(out)
 		return out
 
-	def costFunctionReg(self, theta, lambda_val, X, y=None):
-		'''Regularized cost function.  Meant to be used after running mapFeature on a training set.'''
+	def costFunctionReg(self, theta, lambda_val=0, X=None, y=None):
+		'''Regularized cost function.'''
+		# Initialize variables for computing cost function
+		X = self.X
 		m, n = X.shape
 		y = self.y
 		# Create hypothesis with sigmoid function
@@ -79,6 +86,20 @@ class RegularizedLogReg():
 		print 'Gradient:\n' + str(list(grad))
 		return J
 
+	def getOptimalTheta(self, theta_len, lambda_val):
+		# use the scipy optimize method minimize to obtain optimal theta
+		# initialize variables to pass into args
+		optimal_theta = minimize(self.costFunctionReg, x0=pd.Series(np.zeros(theta_len)), args=(lambda_val,), method='TNC', jac=False)
+		print 'Optimal theta:\n' + str(optimal_theta.x)
+		return optimal_theta.x
+
+	def predict(self, theta):
+		X = self.X
+		y = self.y
+		p = 100 * np.mean((np.round(pd.Series(1 / (1 + np.exp(dot(X, theta))))) == y).convert_objects(convert_numeric=True))
+		print 'Training accuracy = ' + str(p)
+		return p
+
 	def plotData(self, theta):
 		'''Hard-coded for sample data'''
 		df = self.df
@@ -91,7 +112,7 @@ class RegularizedLogReg():
 		pl.legend(['y = 1', 'y = 0'])
 		pl.show()
 
-df1 = RegularizedLogReg('csv', col_labels=['Microchip Test 1', 'Microchip Test 2', 'y'], input_file='log_reg_data2.csv')
-df1.plotData(0)
-polynomial_X = df1.mapFeature(6)
-df1.costFunctionReg(pd.Series(np.zeros(len(polynomial_X.columns))), 1, polynomial_X)
+df1 = RegularizedLogReg('csv', col_labels=['Microchip Test 1', 'Microchip Test 2', 'y'], input_file='log_reg_data2.csv', map_feature=True, degree=6)
+df1.costFunctionReg(pd.Series(np.zeros(28)))
+theta = df1.getOptimalTheta(28, 0)
+df1.predict(theta)

@@ -47,6 +47,7 @@ lambda = 1;
 [cost, grad] = costFunctionReg(initial_theta, X, y, lambda);
 
 fprintf('Cost at initial theta (zeros): %f\n', cost);
+fprintf(' %f \n', grad);
 
 fprintf('\nProgram paused. Press enter to continue.\n');
 pause;
@@ -54,11 +55,8 @@ pause;
 %% ============= Part 2: Regularization and Accuracies =============
 %  Try the following values of lambda (0, 1, 10, 100).
 
-% Initialize fitting parameters
-initial_theta = zeros(size(X, 2), 1);
-
-% Set regularization parameter lambda to one of (0, 1, 10, 100)
-lambda = 1;
+% Set regularization parameter lambda to 0, as it had the highest accuracy
+lambda = 0;
 
 % Set Options
 options = optimset('GradObj', 'on', 'MaxIter', 400);
@@ -66,6 +64,7 @@ options = optimset('GradObj', 'on', 'MaxIter', 400);
 % Optimize
 [theta, J, exit_flag] = ...
 	fminunc(@(t)(costFunctionReg(t, X, y, lambda)), initial_theta, options);
+fprintf('Optimized theta: %f\n', theta);
 
 % Plot Boundary
 plotDecisionBoundary(theta, X, y);
