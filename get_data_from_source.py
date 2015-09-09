@@ -2,7 +2,7 @@ from my_sql_conn import mySQLconn
 import numpy as np
 import pandas as pd
 
-class GetDataFromSource():
+class GetDataFromSource(object):
 
 	df = pd.DataFrame()
 
@@ -11,7 +11,7 @@ class GetDataFromSource():
 		self.source = source
 		self.col_labels = col_labels
 		self.sql_query = sql_query
-		self.input_file = input_file	
+		self.input_file = input_file
 
 		# set up dataframe from mySQL or csv source data
 		if source == 'csv':
