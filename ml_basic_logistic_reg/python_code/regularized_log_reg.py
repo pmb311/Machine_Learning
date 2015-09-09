@@ -54,7 +54,6 @@ class RegularizedLogReg(GetDataFromSource):
 
 	def getOptimalTheta(self, theta_len, lambda_val):
 		'''Use the scipy optimize method minimize to obtain optimal theta'''
-		# initialize variables to pass into args
 		optimal_theta = minimize(self.costFunctionReg, x0=pd.Series(np.zeros(theta_len)), args=(lambda_val,), method='TNC', jac=False)
 		print 'Optimal theta:\n' + str(optimal_theta.x)
 		return optimal_theta.x
