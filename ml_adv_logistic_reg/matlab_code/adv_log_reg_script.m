@@ -1,8 +1,10 @@
 %     Uses the following files
+%	  displayData.m
+%	  fmincg.m
 %     lrCostFunction.m (logistic regression cost function)
+%	  sigmoid.m
 %     oneVsAll.m
 %     predictOneVsAll.m
-%     predict.m
 
 %% Initialization
 clear ; close all; clc
