@@ -35,7 +35,7 @@ class GetDataFromSource(object):
 			except TypeError:
 				print 'Error: input_file is required for this source'
 		else:
-			print 'Only csv and mySQL sources are currently supported'
+			print 'Only csv, mySQL, and mat sources are currently supported'
 			raise TypeError
 
 		df = self.df
