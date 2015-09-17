@@ -47,5 +47,15 @@ class GetDataFromSource(object):
 			self.X = self.df['X']
 			self.y = self.df['y']
 		self.m, self.n = self.X.shape
+
+		# Join ones vector to dataframe/array
 		if source != 'mat':
 			self.X.insert(0,'Ones', pd.Series(np.ones(self.m)))
+		else:
+			new_X = np.array([np.insert(self.X[0], 0, [1])])
+			for r in range(1, self.m):
+				new_X = np.concatenate((new_X, [np.insert(self.X[r], 0, [1])]), axis=0)
+			self.X = new_X
+			self.X = pd.DataFrame(self.X)
+			self.y = pd.DataFrame(self.y)
+			self.m, self.n = self.X.shape
