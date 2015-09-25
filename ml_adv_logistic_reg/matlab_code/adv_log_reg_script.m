@@ -30,10 +30,18 @@ pause;
 
 %% ============ Part 2: Vectorized Logistic Regression ============
 
+fprintf('\nSingle iteration of cost function...\n')
+lambda = 0.1;
+X = [ones(m, 1) X];
+n = size(X, 2)
+test_theta = zeros(n, 1);
+
+[J, grad] = lrCostFunction(test_theta, X, y, lambda)
+
 fprintf('\nTraining One-vs-All Logistic Regression...\n')
 
-lambda = 0.1;
-[all_theta] = oneVsAll(X, y, num_labels, lambda);
+
+% [all_theta] = oneVsAll(X, y, num_labels, lambda);
 
 fprintf('Program paused. Press enter to continue.\n');
 pause;
@@ -41,7 +49,7 @@ pause;
 
 %% ================ Part 3: Predict for One-Vs-All ================
 % Compute accuracy on our training set
-pred = predictOneVsAll(all_theta, X);
+% pred = predictOneVsAll(all_theta, X);
 
-fprintf('\nTraining Set Accuracy: %f\n', mean(double(pred == y)) * 100);
+% fprintf('\nTraining Set Accuracy: %f\n', mean(double(pred == y)) * 100);
 

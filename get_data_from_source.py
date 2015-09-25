@@ -44,18 +44,21 @@ class GetDataFromSource(object):
 			self.X = df.drop(df.columns[-1], 1)
 			self.y = df.ix[:,-1]
 		else:
-			self.X = self.df['X']
-			self.y = self.df['y']
-		self.m, self.n = self.X.shape
-
-		# Join ones vector to dataframe/array
-		if source != 'mat':
-			self.X.insert(0,'Ones', pd.Series(np.ones(self.m)))
-		else:
-			new_X = np.array([np.insert(self.X[0], 0, [1])])
-			for r in range(1, self.m):
-				new_X = np.concatenate((new_X, [np.insert(self.X[r], 0, [1])]), axis=0)
-			self.X = new_X
-			self.X = pd.DataFrame(self.X)
-			self.y = pd.DataFrame(self.y)
+			self.X = df['X']
+			self.y = pd.DataFrame(df['y'])
 			self.m, self.n = self.X.shape
+			self.header = np.array([''])
+			# Commence horrible hack job to convert array of arrays to dataframe with headers & indices.  FIXME
+			header_vals = ['col_num_' + str(i + 1) for i in range(self.n)]
+			self.header = np.append(self.header, header_vals)
+			new_X = np.array(np.insert(self.X[0], 0, [1]))
+			new_X = np.append([self.header], [new_X], axis=0)
+			for r in range(1, self.m):
+				new_X = np.append(new_X, [np.insert(self.X[r], 0, [r + 1])], axis=0)
+			self.X = pd.DataFrame(new_X[1:,1:], index=new_X[1:,0], columns=new_X[0,1:])
+			self.X = self.X.convert_objects(convert_numeric=True)
+		self.m, self.n = self.X.shape
+		self.X.insert(0,'Ones', pd.Series(np.ones(self.m)))
+		if source == 'mat':
+			self.X['Ones'].fillna(1, inplace=True)
+		self.n = self.n + 1
